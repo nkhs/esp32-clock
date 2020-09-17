@@ -268,6 +268,8 @@ void setup(void) {
 
   tft.fillScreen(ST77XX_BLACK);
   testdrawtext(strcat("WiFi connected ", ""), ST77XX_WHITE);
+  clearText();
+  delay(1000);
 
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
@@ -302,14 +304,18 @@ void loop() {
   struct tm tmstruct ;
   tmstruct.tm_year = 0;
   GetLocalTime(&tmstruct, 5000);
-  Serial.printf("\nNow is : %d-%02d-%02d %02d:%02d:%02d Alarm %2d : %2d\n",
-                tmstruct.tm_year + 1900, tmstruct.tm_mon + 1,
-                tmstruct.tm_mday, tmstruct.tm_hour,
-                tmstruct.tm_min, tmstruct.tm_sec,
-                alarmHours, alarmMinutes);
+//  Serial.printf("\nNow is : %d-%02d-%02d %02d:%02d:%02d Alarm %2d : %2d\n",
+//                tmstruct.tm_year + 1900, tmstruct.tm_mon + 1,
+//                tmstruct.tm_mday, tmstruct.tm_hour,
+//                tmstruct.tm_min, tmstruct.tm_sec,
+//                alarmHours, alarmMinutes);
+  Serial.printf("\nNow is : %02d:%02d:%02d\n",
+                tmstruct.tm_hour,
+                tmstruct.tm_min, tmstruct.tm_sec);
 
 
-  sprintf(temp, "%d-%02d-%02d% 02d:%02d:%02d Alarm %2d : %2d\n", tmstruct.tm_year + 1900, tmstruct.tm_mon + 1, tmstruct.tm_mday, tmstruct.tm_hour, tmstruct.tm_min, tmstruct.tm_sec, alarmHours, alarmMinutes);
+  //  sprintf(temp, "%d-%02d-%02d% 02d:%02d:%02d Alarm %2d : %2d\n", tmstruct.tm_year + 1900, tmstruct.tm_mon + 1, tmstruct.tm_mday, tmstruct.tm_hour, tmstruct.tm_min, tmstruct.tm_sec, alarmHours, alarmMinutes);
+  sprintf(temp, "%02d:%02d:%02d", tmstruct.tm_hour, tmstruct.tm_min, tmstruct.tm_sec);
 
   if (60 * alarmHours + alarmMinutes <= 60 * tmstruct.tm_hour + tmstruct.tm_min) {
     Serial.printf("-Alarm-");
@@ -318,14 +324,19 @@ void loop() {
                   tmstruct.tm_mday, tmstruct.tm_hour,
                   tmstruct.tm_min, tmstruct.tm_sec,
                   alarmHours, alarmMinutes);
-//    sayTime(tmstruct.tm_hour, tmstruct.tm_min, talkie);
-//    initLCD();
+    //    sayTime(tmstruct.tm_hour, tmstruct.tm_min, talkie);
+    //    initLCD();
   }
 
-  
-  
-  tft.fillScreen(ST77XX_BLACK);
-  testdrawtext(temp, ST77XX_WHITE);
+  //  clearText();
+
+  tft.fillRect(40, 30, 50, 10, ST77XX_BLACK );
+  //  testdrawtext(temp, ST77XX_WHITE);
+  tft.setCursor(40, 30);
+  tft.setTextColor(ST77XX_WHITE);
+  //  tft.setTextWrap(true);
+  tft.print(temp);
+
 
   delay(1000);
 
@@ -383,7 +394,14 @@ void testlines(uint16_t color) {
   }
 }
 
+char prevText[300];
+
+void clearText() {
+  testdrawtext(prevText, ST77XX_BLACK);
+}
+
 void testdrawtext(char *text, uint16_t color) {
+  strcpy(prevText, text);
   tft.setCursor(0, 0);
   tft.setTextColor(color);
   tft.setTextWrap(true);
